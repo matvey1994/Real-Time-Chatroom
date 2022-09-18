@@ -28,8 +28,8 @@ getDocs(colRef)
         snapshot.docs.forEach((doc) => {
             message.push({ ...doc.data(), id: doc.id })
         })
-        console.log(message)
     })
     .catch(err => {
         console.log(err.message)
     })
+
