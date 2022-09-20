@@ -6,7 +6,7 @@
 
 ## General Info
 
-N/A
+Project from Net Ninja
 
 ## Technologies
 
