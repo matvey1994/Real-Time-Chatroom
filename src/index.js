@@ -3,7 +3,7 @@ import './styles.css';
 
 // Import the functions you need from the SDKs required
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, getDocs, addDoc, Timestamp } from 'firebase/firestore'
+import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, where, orderBy, doc } from 'firebase/firestore'
 
 
 // Web App's Firebase configuration
@@ -25,66 +25,53 @@ const db = getFirestore()
 // Collection Ref
 const colRef = collection(db, 'chats')
 
+// Queries
+const q = query(colRef, orderBy('created_at'))
+
 // GetRealtime data
-getDocs(colRef)
-    .then((snapshot) => {
-        let message = []
-        snapshot.docs.forEach((doc) => {
-            message.push({ 
-                 ...doc.data(),
-                 id: doc.id
-            })
-        })
-        console.log(message)
+onSnapshot(q,  (snapshot) => {
+    let message = []
+    const chatList = document.querySelector('.chat-list');
+    snapshot.docs.forEach((doc) => {
+        // message.push({...doc.data(), id: doc.id})
+        const data = doc.data();
+        const id = doc.id;
+        const obj = { ...data, id }
+
+        console.log(obj)
     })
-    .catch(err => {
-        console.log(err.message)
-    })
+
+
+
+
+    // message.forEach(message => {
+    // const html = `
+    //     <li class="list-group-item">
+    //         <span class="username">${message.username}</span>
+    //         <span class="message">${message.message}</span>
+    //         <div class="time">${message.username}</div>
+    //      </li>   
+    // `;
+
+    // chatList.innerHTML += html;
+    // })
+
+
+}) 
 
 
 const addChatForm = document.querySelector('.new-chat')
 addChatForm.addEventListener('submit', (e) => {
     e.preventDefault()
-    
-    const now = new Date()
 
     addDoc(colRef, {
         message: addChatForm.message.value,
-        created_at: Timestamp.fromDate(now)
-
+        created_at: serverTimestamp()
     })
     .then(() => {
         addChatForm.reset()
     })
 })
-
-// class Chatroom {
-//     constructor(room, username) {
-//         this.room = room;
-//         this.username = username;
-//         this.chats = colRef;
-//     }
-//     // async addChat(message){
-//     //     // Format a chat object
-//     //     const now = new Date();
-//     //     const chat = {
-//     //         message,
-//     //         username: this.username,
-//     //         room: this.room,
-//     //         created_at: Timestamp.fromDate(now)
-//     //     };
-//     //     // Save the chat document
-//     //     const response = await this.chats.add(chat);
-//     //     return response
-//     // } 
-// }
-
-// const chatroom = new Chatroom('gaming', 'matvey')
-// console.log(chatroom)
-// chatroom.addChat('hello everyone')
-//     .then(() => console.log('chat added'))
-//     .catch(err => console.log(err))
-
 
 
     
